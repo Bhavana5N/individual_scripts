@@ -1,7 +1,7 @@
 /*************************************************************************
 Author: Upendra 
 
-This program will help the Oiler Bank get their ATM up and running.
+This program will help the Oiler Bank get its ATM up and running.
 
 Input: 
 		[D] Deposit
@@ -73,7 +73,7 @@ int main()
             {
                 cout<< "Amount is not a multiple of 10"<< endl;
             }
-            else if(withdrawl_amt >= current_bal)
+            else if(withdrawl_amt > current_bal)
             {
                 cout<< "Insufficiant funds in your account"<< endl;
             }
