@@ -1,0 +1,215 @@
+/*************************************************************************
+Author: Upendra Reddy M
+
+This program is designed for Roulette spinning game.
+
+Input:
+ -------------------------------------------------------
+ | Input | Wager | Payout |
+ -------------------------------------------------------
+ | 1 | Even numbers ( 2, 4, 6, ..., 36) | 1 to 1 |
+ | 2 | Odd numbers ( 1, 3, 5, ..., 35) | 1 to 1 |
+ | 3 | 1st half ( 1, 2, 3, ..., 18) | 1 to 1 |
+ | 4 | 2nd half (19, 20, 21, ..., 36) | 1 to 1 |
+ | 5 | Exact guess ( 1 - 36, 0, and 00 ) |35 to 1 |
+ -------------------------------------------------------
+Output:
+User will either win or lose the chips depending on his wager choice.
+*************************************************************************/
+#include <iostream>
+#include <string>
+#include <math.h>
+#include <iomanip>
+#include <stdlib.h>
+#include <time.h>
+using namespace std;
+
+int main()
+{
+    const int max_num = 37;
+    const int min_num = 0;
+    int ChoiceOfNumber, wager,NumberOfChips,avail_chips,winningNum, chips_won, chips_lost;
+    string Confirm, choice, st2int ;
+    bool WagerIsValid;
+    const int init_chips = 1000;
+    avail_chips = init_chips;
+    /* including srand with time dependency for random number generation */
+    srand(time(0));
+    
+    /* Checking for the available chips with player, so that he can process with the game */
+    while(avail_chips > 0)
+    {
+        /* User's choice for the selection of wager */
+        cout<< "\n-------------------------------------------------------"<< endl;
+        cout<< "|  Input |                Wager             | Payout |"<< endl;
+        cout<< "-------------------------------------------------------"<< endl;
+        cout<< "|   1    | Even numbers ( 2, 4, 6, ..., 36) | 1 to 1 |"<< endl;
+        cout<< "|   2    | Odd numbers ( 1, 3, 5, ..., 35)  | 1 to 1 |"<< endl;
+        cout<< "|   3    | 1st half ( 1, 2, 3, ..., 18)     | 1 to 1 |"<< endl;
+        cout<< "|   4    | 2nd half (19, 20, 21, ..., 36)   | 1 to 1 |"<< endl;
+        cout<< "|   5    | Exact guess ( 1 - 36, 0, and 00 )|35 to 1 |"<< endl;
+        cout<< "-------------------------------------------------------"<< endl;
+        
+        cout<< "Available chips: "<< avail_chips<< endl;
+        cout<< "Please enter your wager: ";
+        cin>> wager;
+        
+        /* Checking if the user hs opted for valid input */
+        if (wager == 1 || wager == 2 || wager == 3 || wager == 4)
+        {
+            WagerIsValid = true;
+        }
+        else if (wager == 5)
+        {
+            WagerIsValid = true;
+            cout<< "Please enter the Number for wager: ";
+            cin>> st2int;
+            
+            if (st2int == "00")
+            {
+                ChoiceOfNumber = max_num;
+            }
+            else
+            {
+                ChoiceOfNumber = stoi(st2int);
+                if (ChoiceOfNumber>36 || ChoiceOfNumber <0)
+                {
+                    cout<< "Please enter the valid choise of number from 0 to 36 or 00 " << endl;
+                    continue;
+                }
+            }
+        }
+        else
+        {
+            WagerIsValid = false;
+            cout<< "Please enter valid wager input as displayed" << endl;
+            continue;
+        }
+        cout<< "Please wager a positive amount of chips considering your balance: ";
+        cin>> NumberOfChips;
+        winningNum = rand() % (max_num - min_num +1) + min_num;
+        
+        /* To display the player choice of wager in the output console */
+        if(wager == 1)
+            choice = "Even Numbers";
+        else if (wager == 2)
+            choice = "Odd Numbers";
+        else if (wager == 3)
+            choice = "1st half of Number ";
+        else if (wager == 4)
+            choice = "2nd half of Numbers";
+        else
+            choice = "Exact guess " + st2int;
+        
+        /* If there is no sufficeint chips or player bids more chips than he has display as invalid */
+        if( NumberOfChips > avail_chips || NumberOfChips <= 0)
+        {
+            cout<< "Invalid Input, Please enter the chips considering your balance:"<< avail_chips<< endl;
+            continue;
+        }
+        /* In case if the player has given valid amount of chips, then process with ext steps */
+        else if ((NumberOfChips <= avail_chips)
+           && WagerIsValid
+           )
+        {
+            cout<< "You have decided to wager " << NumberOfChips <<" chips on " << choice<< endl;
+            cout<< "\n Is this correct?"<< endl;
+            cout<< "Enter ‘Y’ to proceed with the game"<< endl;
+            cout<< "OR enter ‘N’ to take back your wager:";
+            cin>> Confirm;
+            cout<< endl;
+            
+            if (Confirm == "Y"|| Confirm == "y")
+            {
+                /* Condition for first 4 cases where the chips will double if the player wins*/
+                if (((wager == 1) && (winningNum % 2 == 0) && (winningNum >= 2) && (winningNum <= max_num))
+                    || ((wager == 2) && (winningNum % 2  != 0) && (winningNum >= 1) && (winningNum <= 35))
+                    || ((wager == 3) && (winningNum >= 1) && (winningNum <= 18))
+                    || ((wager == 4) && (winningNum >= 19) && (winningNum <= 36))
+                    )
+                {
+                    /* Converting string to int in case the max_num(37) is the winning number to 00 */
+                    if (winningNum == max_num)
+                    {
+                        cout<<"The ball is landed on Number: " << "00"<< "\nSo the winning number is: "
+                        <<"00" << "\n You won the chips for this wager"<< endl;
+                    }
+                    else
+                    {
+                        cout<<"The ball is landed on Number " << winningNum<< "\nSo the winning number is "
+                        <<winningNum << "\nYou won the chips for this wager"<< endl;
+                    }
+                    avail_chips = avail_chips + NumberOfChips;
+                    cout<< " Total chips available are: "<< avail_chips << endl;
+                }
+                else if ((wager == 5)
+                        &&(ChoiceOfNumber == winningNum)
+                        && (ChoiceOfNumber >=min_num)
+                        && (ChoiceOfNumber <=max_num)
+                         )
+                {
+                    if (winningNum == max_num)
+                    {
+                        cout<<"The ball is landed on Number " << "00"<< "\nSo the winning number is "
+                        <<"00" << "\nYou won the chips for this wager"<< endl;
+                    }
+                    else
+                    {
+                        cout<<"The ball is landed on Number " << winningNum<< "\nSo the winning number is "
+                        <<winningNum << "\nYou won the chips for this wager"<< endl;
+                    }
+                    avail_chips = avail_chips+ (NumberOfChips * 35);
+                    cout<< " Total available chips are: "<< avail_chips<< endl;
+                }
+                else
+                {
+                    if (winningNum == max_num)
+                    {
+                        cout<<"The ball is landed on Number " << "00"<< "\nSo the winning number is "
+                        <<"00" << "\nYou lost the chips for this wager"<< endl;
+                       
+                    }
+                    else
+                    {
+                        cout<<"The ball is landed on Number " << winningNum<< "\nSo the winning number is "
+                        <<winningNum << "\nYou lost the chips for this wager"<< endl;
+                    }
+                    
+                    avail_chips = avail_chips - NumberOfChips;
+                    cout<< "Total available chips are: "<< avail_chips<< endl;
+                }
+            }
+            else
+            {
+                cout<< "Please wait for the next spin" << endl;
+            }
+        }
+        cout<< "\nDo you want to continue the game?"<< endl;
+        cout<< "Enter ‘Y’ to proceed with the game"<< endl;
+        cout<< "OR enter ‘N’ to take back your wager: ";
+        cin>> Confirm;
+        cout<< endl;
+        
+        if(Confirm == "Y" || Confirm == "y")
+        {
+            continue;
+        }
+        else
+        {
+            if (avail_chips >= init_chips )
+            {
+                chips_won = avail_chips - init_chips;
+                cout<< "You are walking away with a gain of " << chips_won<< " chips in this game"<<endl;
+                cout<< "You got lucky today";
+            }
+           else
+           {
+               chips_lost = init_chips - avail_chips;
+               cout<< "You are walking away with a lose of " << chips_lost<< " chips in this game"<< endl;
+               cout<< "Better luck next time";
+           }
+            break;
+        }
+    }
+    return 0;
+}
